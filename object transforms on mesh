@@ -1,0 +1,73 @@
+import * as THREE from 'three';
+// STEP 1 : creating scene
+const scene = new THREE.Scene();
+
+// STEP 2 :  creating object
+//creating geometry
+
+const group = new THREE.Group();
+
+scene.add(group);
+
+const box1 = new THREE.Mesh(
+    new THREE.BoxGeometry(2,2,2),
+    new THREE.MeshBasicMaterial({color : "pink"})
+)
+
+box1.position.x = -3;
+
+group.add(box1);
+
+const box2 = new THREE.Mesh(
+    new THREE.BoxGeometry(2,2,2),
+    new THREE.MeshBasicMaterial({color : "yellow"})
+)
+
+box2.position.x = 3;
+
+group.add(box2);
+
+
+const box3 = new THREE.Mesh(
+    new THREE.BoxGeometry(2,2,2),
+    new THREE.MeshBasicMaterial({color : "green"})
+)
+
+// box3.scale.x = 2;
+// box3.scale.z = 70;
+// box3.rotation.x = 51;
+
+group.add(box3);
+
+group.position.y = 0;
+
+  const a = new THREE.AxesHelper();
+  scene.add(a);
+
+
+  
+  //step 4 : creating camera
+  const size = {
+      width : 700,
+      height : 500
+    };
+    
+    const camera = new THREE.PerspectiveCamera(70,size.width/size.height)     //(iew angle,aspect ratio)
+//   camera.position.y = -3;
+camera.position.z = 5;
+// camera.position.set(1,2,3);
+scene.add(camera);
+
+// console.log(box.position.distanceTo(camera.position));
+
+
+// box.position.normalize();
+
+// camera.lookAt(new THREE.Vector3(1,2  ,0));
+
+
+  //step 4 : director wala kaam (rendering)
+  const target = document.querySelector(".wbgl");
+  const renderer = new THREE.WebGLRenderer({canvas : target});
+  renderer.setSize(size.width,size.height);
+  renderer.render(scene,camera);
