@@ -1,0 +1,88 @@
+import * as THREE from 'three';
+import { Camera } from 'three';
+import { cameraPosition } from 'three/webgpu';
+// STEP 1 : creating scene
+const scene = new THREE.Scene();
+
+// STEP 2 :  creating object
+//creating geometry
+
+const geometry = new THREE.BoxGeometry(1,2,1);    // (width,height,depth)
+
+//specifying material for that geometry
+const material = new THREE.MeshBasicMaterial({color : "yellow"});
+
+//combining these to make object using mesh
+  const box = new THREE.Mesh(geometry,material);
+
+
+
+  
+  //step 3 : adding to the scene
+  scene.add(box);
+
+
+
+
+
+
+
+
+
+  
+  //step 4 : creating camera
+  const size = {
+    width : 700,
+    height : 500
+  };
+  
+  const camera = new THREE.PerspectiveCamera(75,size.width/size.height)     //(view angle,aspect ratio)
+//   camera.position.x = -2;
+  camera.position.z = 3;
+  scene.add(camera);
+
+
+
+
+
+  
+
+  //step 4 : director wala kaam (rendering)
+  const target = document.querySelector(".wbgl");
+  const renderer = new THREE.WebGLRenderer({canvas : target});
+  renderer.setSize(size.width,size.height);
+//   let time = Date.now();
+  let clock = new THREE.Clock();
+
+  const tick = ()=>{
+    // let currentTime = Date.now();
+    // let delta = currentTime - time;
+    // console.log("hello !");
+    // time = currentTime;
+    // box.position.x += 0.008;
+    const elapsedTime = clock.getElapsedTime();
+    // box.rotation.y += elapsedTime;
+    box.position.y = Math.sin(elapsedTime);
+    box.position.x = Math.cos(elapsedTime);
+    camera.lookAt(box.position);
+    renderer.render(scene,camera);
+    window.requestAnimationFrame(tick);
+    camera.position.y = (cursor.y * 3);
+    camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 2;
+    camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 2;
+  };
+
+
+  const cursor = {
+    x : 0,
+    y : 0,
+  }
+
+  tick();
+
+  window.addEventListener("mousemove",(event) => {
+    cursor.x = event.clientX/size.width - 0.5;
+    cursor.y = (event.clientY/size.height - 0.5) * -1;
+
+    // console.log(cursor.x,cursor.y);
+})
