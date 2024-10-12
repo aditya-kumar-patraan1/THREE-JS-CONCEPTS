@@ -1,0 +1,70 @@
+import * as THREE from 'three';
+// STEP 1 : creating scene
+const scene = new THREE.Scene();
+
+// STEP 2 :  creating object
+//creating geometry
+
+const geometry = new THREE.BoxGeometry(1,2,1);    // (width,height,depth)
+
+//specifying material for that geometry
+const material = new THREE.MeshBasicMaterial({color : "yellow"});
+
+//combining these to make object using mesh
+  const box = new THREE.Mesh(geometry,material);
+
+
+
+  
+  //step 3 : adding to the scene
+  scene.add(box);
+
+
+
+
+
+
+
+
+
+  
+  //step 4 : creating camera
+  const size = {
+    width : 700,
+    height : 500
+  };
+  
+  const camera = new THREE.PerspectiveCamera(75,size.width/size.height)     //(view angle,aspect ratio)
+//   camera.position.x = -2;
+  camera.position.z = 3;
+  scene.add(camera);
+
+
+
+
+
+  
+
+  //step 4 : director wala kaam (rendering)
+  const target = document.querySelector(".wbgl");
+  const renderer = new THREE.WebGLRenderer({canvas : target});
+  renderer.setSize(size.width,size.height);
+//   let time = Date.now();
+  let clock = new THREE.Clock();
+
+  const tick = ()=>{
+    // let currentTime = Date.now();
+    // let delta = currentTime - time;
+    // console.log("hello !");
+    // time = currentTime;
+    // box.position.x += 0.008;
+    const elapsedTime = clock.getElapsedTime();
+    // box.rotation.y += elapsedTime;
+    box.position.y = Math.sin(elapsedTime);
+    box.position.x = Math.cos(elapsedTime);
+    camera.lookAt(box.position);
+    renderer.render(scene,camera);
+    window.requestAnimationFrame(tick);
+  };
+
+  tick();
