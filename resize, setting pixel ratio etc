@@ -1,0 +1,100 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/Addons.js';
+// STEP 1 : creating scene
+const scene = new THREE.Scene();
+
+// STEP 2 :  creating object
+//creating geometry
+
+const geometry = new THREE.BoxGeometry(2,2,1);    // (width,height,depth)
+
+//specifying material for that geometry
+const material = new THREE.MeshBasicMaterial({color : "royalblue"});
+
+//combining these to make object using mesh
+  const box = new THREE.Mesh(geometry,material);
+
+
+  
+  //step 3 : adding to the scene
+  scene.add(box);
+
+  
+  
+  //step 4 : creating camera
+  const size = {
+    width : window.innerWidth,
+    height : window.innerHeight,
+  };
+  
+  const camera = new THREE.PerspectiveCamera(75,size.width/size.height)     //(view angle,aspect ratio)
+  camera.position.x = 0;
+  camera.position.z = 3;
+  scene.add(camera);
+
+// box.rotation.x = 3;
+  
+  
+  //step 4 : director wala kaam (rendering)
+  const target = document.querySelector(".wbgl");
+  const renderer = new THREE.WebGLRenderer({canvas : target});
+  renderer.setSize(size.width,size.height);
+  renderer.render(scene,camera);
+  const controls = new OrbitControls(camera,target);
+  //   controls.target.y = 1;
+  controls.enableDamping = true;
+  //pixel ratio setting
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  
+  //full screen 
+
+//   window.addEventListener('dblclick',()=>{
+//     if(!document.fullscreenElement){
+           target.requestFullscreen();
+//         console.log("go full screen");
+//     }
+//     else{
+           document.exitFullscreen();
+//         console.log("out full screen");
+//     }
+//   })
+
+  const clock = new THREE.Clock();
+
+
+  
+  const tick = ()=>{
+    // let currentTime = Date.now();
+    // let delta = currentTime - time;
+    // console.log("hello !");
+    // time = currentTime;
+    box.position.x += 0.008;
+    controls.update();
+    const elapsedTime = clock.getElapsedTime();
+    // box.rotation.y += elapsedTime;
+    box.position.y = Math.sin(elapsedTime);
+    box.position.x = Math.cos(elapsedTime);
+    camera.lookAt(box.position);
+    renderer.render(scene,camera);
+    window.requestAnimationFrame(tick);
+  };
+
+  tick();
+
+
+
+  //resizing 
+
+ // Resizing
+window.addEventListener('resize', () => {
+    // Update sizes
+    size.width = window.innerWidth;
+    size.height = window.innerHeight;
+  
+    // Update camera aspect ratio and projection matrix
+    camera.aspect = size.width / size.height;
+    camera.updateProjectionMatrix();
+  
+    // Update renderer size
+    renderer.setSize(size.width, size.height);
+  });
