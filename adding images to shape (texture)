@@ -1,0 +1,112 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/Addons.js';
+import GUI from 'lil-gui';
+
+const scene = new THREE.Scene();
+
+const loadingManager = new THREE.LoadingManager();
+loadingManager.onError = () => {
+    console.log("error");
+};
+
+loadingManager.onProgress=()=>{
+    console.log("progress");
+};
+
+loadingManager.onLoad=()=>{
+    console.log("on load");
+};
+
+const textureLoader = new THREE.TextureLoader(loadingManager);
+const color = textureLoader.load("https://images.unsplash.com/photo-1458682625221-3a45f8a844c7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cmFpbm5ib3clMjBsb29rJTIwcGF0dGVybnxlbnwwfHwwfHx8MA%3D%3D");
+
+color.colorSpace =  THREE.SRGBColorSpace;
+
+//minification applying
+color.minFilter = THREE.NearestFilter;
+
+const gui = new GUI();
+
+const geometry = new THREE.TorusGeometry(1,0.35,32,100);
+
+const material = new THREE.MeshBasicMaterial({map : color});
+
+const box = new THREE.Mesh(geometry,material);
+
+scene.add(box);
+
+const size = {
+    width : 700,
+    height : 500
+};
+
+// console.log(geometry.attributes.uv);
+
+const camera = new THREE.PerspectiveCamera(75,size.width/size.height);
+
+camera.position.x = -2;
+camera.position.z = 3;
+scene.add(camera);
+
+const target = document.querySelector(".wbgl");
+  const renderer = new THREE.WebGLRenderer({canvas : target});
+  renderer.setSize(size.width,size.height);
+  renderer.render(scene,camera);
+
+  const controls = new OrbitControls(camera,target);
+  //   controls.target.y = 1;
+  controls.enableDamping = true;
+  //pixel ratio setting
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+
+
+  
+  const clock = new THREE.Clock();
+
+
+  
+  const tick = ()=>{
+    // let currentTime = Date.now();
+    // let delta = currentTime - time;
+    // console.log("hello !");
+    // time = currentTime;
+    box.position.x += 0.008;
+    controls.update();
+    const elapsedTime = clock.getElapsedTime();
+    // box.rotation.y += elapsedTime;
+    box.position.y = Math.sin(elapsedTime);
+    box.position.x = Math.cos(elapsedTime);
+    camera.lookAt(box.position);
+    renderer.render(scene,camera);
+    window.requestAnimationFrame(tick);
+  };
+
+  tick();
+
+
+
+  //resizing 
+
+ // Resizing
+window.addEventListener('resize', () => {
+    // Update sizes
+    size.width = window.innerWidth;
+    size.height = window.innerHeight;
+  
+    // Update camera aspect ratio and projection matrix
+    camera.aspect = size.width / size.height;
+    camera.updateProjectionMatrix();
+  
+    // Update renderer size
+    renderer.setSize(size.width, size.height);
+  });
+
+gui.add(box.position,"y").min(-3).max(3).step(1).name("posiionY");
+
+gui.add(material,"wireframe");
+gui.add(box,"visible");
+const guiProps = { color: material.color.getStyle() }; // Initialize color with current material color
+
+gui.addColor(guiProps, "color").onChange(() => {
+  material.color.set(guiProps.color); // Set the new color
+});
